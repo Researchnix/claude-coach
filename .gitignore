@@ -1,0 +1,6 @@
+fit/
+log/
+plan/
+*.md
+.env
+.DS_Store
