@@ -3,4 +3,7 @@ log/
 plan/
 *.md
 .env
+.garmin_tokens
 .DS_Store
+*.base
+*.db

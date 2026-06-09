@@ -166,3 +166,72 @@ sport.get_value('sport')
 session = next(f for f in data_frames if f.name == 'session')
 for field in session.fields:
     print(field.name, ':', field.value)
+
+
+
+
+#--------------------------------------------------------------------------------
+# Intervas API test                                                             #
+#--------------------------------------------------------------------------------
+
+import os
+import requests
+from datetime import date, timedelta
+from dotenv import load_dotenv
+
+load_dotenv()
+
+api_key = os.environ["INTERVALS_API_KEY"]
+athlete_id = os.environ["INTERVALS_ATHLETE_ID"]
+
+auth = ("API_KEY", api_key)
+
+base_url = f"https://intervals.icu/api/v1/athlete/{athlete_id}"
+base_url
+
+oldest = (date.today() - timedelta(days=7)).isoformat()
+oldest
+
+
+resp = requests.get( f"{base_url}/activities", auth=auth, params={"oldest": oldest, "fields": "id"})
+
+resp = requests.get(f"{base_url}/activities", auth=auth, params={"oldest": oldest})
+resp.raise_for_status()
+
+print(f"{base_url}/activities")
+
+activities = resp.json()
+d = activities[0]
+d
+
+for a in activities:
+    print(f"{a.get('start_date_local', '')[:10]}  {a.get('id', ''):<12}  {a.get('name', ''):<40}  id={a.get('id')}")
+
+# pick an id from the list above and paste it here
+activity_id = activities[0]["id"]
+activity_id
+
+fit_resp = requests.get(f"{base_url}/activities/{activity_id}/fit-file", auth=auth)
+print(fit_resp.status_code)
+print(fit_resp.text)
+
+
+fit_resp.raise_for_status()
+
+f"{base_url}/activities/{activity_id}/fit-file"
+
+
+with open(f"{activity_id}.fit", "wb") as f:
+    f.write(fit_resp.content)
+
+print(f"saved {activity_id}.fit ({len(fit_resp.content)} bytes)")
+
+
+
+
+
+
+
+
+
+
